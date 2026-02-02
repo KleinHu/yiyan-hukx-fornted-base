@@ -1,7 +1,7 @@
 {
-  "appKey": "hukx-client",
-  "appSecret": "hukx",
-  "projectName": "易研App",
+  "appKey": "hukx-oa",
+  "appSecret": "hukx-oa",
+  "projectName": "OA系统",
   "theme": "light",
   "colorWeak": false,
   "navbar": true,
