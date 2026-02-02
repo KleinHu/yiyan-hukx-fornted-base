@@ -1,0 +1,8 @@
+{
+  "szhkUrl": "https://iam.cloud.avic",
+  "loginUrl": "/idp/third/oauth2/authorize",
+  "clientId": "132IPS",
+  "responseType": "code",
+  "state": "123",
+  "redirectUri": "http://localhost:5174/code-login"
+}
