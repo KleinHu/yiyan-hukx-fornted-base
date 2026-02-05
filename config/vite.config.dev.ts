@@ -67,6 +67,12 @@ export default mergeConfig(
           changeOrigin: true,
           // 注意：不要重写路径，保留 /api 前缀
         },
+        '/api/240/oa': {
+          // target: 'http://localhost:39996',
+          target: 'http://localhost:10009',
+          changeOrigin: true,
+          // 注意：不要重写路径，保留 /api 前缀
+        },
 
         // ===== 易研平台其他请求（最后匹配）=====
         '^/api': {

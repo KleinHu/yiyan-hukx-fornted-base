@@ -36,6 +36,15 @@ export default {
   'menu.system.loginLog': '用户登录日志',
   'menu.system.operationLog': '操作日志',
   'menu.system.sysOauthClient': '令牌管理',
+
+  // 6S 管理相关
+  'menu.sixs': '6S 管理',
+  'menu.sixs.overview': '概览统计',
+  'menu.sixs.account': '积分台账',
+  'menu.sixs.category': '标准分类',
+  'menu.sixs.checkRecord': '检查记录',
+  'menu.sixs.scoreRecord': '评分记录',
+
   ...localeSettings,
   ...localeMessageBox,
   ...localeLogin,

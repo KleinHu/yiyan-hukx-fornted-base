@@ -1,0 +1,170 @@
+---
+description: 易研 OA 前端项目 - Vue3 + Arco Design + TypeScript 开发规范
+globs: ['**/*.vue', '**/*.ts', '**/*.tsx']
+alwaysApply: true
+---
+
+## 项目概述
+
+### 1. yiyan-hukx-fronted-oa（易研 OA 前端 - 当前项目）
+
+**技术栈版本：**
+
+- Vue 3.2.40 + TypeScript 4.8.4 + Vite 3.2.5
+- Arco Design Vue 2.40.0
+- Pinia 2.0.23（状态管理）
+- Vue Router 4.0.14
+- Vue I18n 9.2.2（国际化）
+- 其他核心依赖：
+  - ECharts 5.4.0 + vue-echarts 6.2.3（图表）
+  - @wangeditor/editor 5.1.23（富文本编辑器）
+  - bpmn-js 17.6.4（流程设计器）
+  - dayjs 1.11.5（日期处理）
+  - lodash 4.17.21（工具函数）
+
+**项目结构：**
+
+```
+src/
+├── api/              # API 接口（bpm、system、form 等）
+├── components/       # 业务组件（bpm、cac-components、chart、editor 等）
+├── views/            # 页面视图（bpm、dashboard、login 等）
+├── router/           # 路由配置（模块化路由）
+├── store/            # Pinia 状态管理（app、permission、security、tab-bar）
+├── hooks/            # 组合式函数（可复用逻辑）
+├── utils/            # 工具函数
+├── types/            # TypeScript 类型定义
+├── constants/        # 常量定义
+├── locale/           # 国际化资源
+└── assets/           # 静态资源
+
+config/               # Vite 配置文件
+├── vite.config.base.ts    # 基础配置
+├── vite.config.dev.ts     # 开发环境配置
+└── vite.config.prod.ts    # 生产环境配置
+```
+
+**开发配置：**
+
+- 开发服务器：`0.0.0.0`，自动打开浏览器
+- 代理配置（vite.config.dev.ts）：
+  - JPAAS 服务：`http://hukx-Macmini.local:9900`
+    - `/api-bpm`、`/api-form`、`/api-system`、`/api-user`
+  - 易研平台：`http://hukx-Macmini.local:39996`
+    - `/api` 通用路径
+  - 人事服务：`http://localhost:10008`
+    - `/api/240/hr` 人事相关接口
+
+**OAuth 配置：**
+
+- appKey: `hukx-oa`
+- appSecret: `hukx-oa`（见 src/config/settings.json）
+
+**代码规范工具：**
+
+- ESLint 8.25.0（Airbnb 规范 + TypeScript + Vue3）
+- Prettier 2.7.1（代码格式化）
+- Stylelint 14.13.0（样式格式化）
+- Husky 8.0.1 + lint-staged 13.0.3（Git 提交前检查）
+- Commitlint 17.1.2（Conventional Commits）
+- vue-tsc 1.0.14（TypeScript 类型检查）
+
+---
+
+## 前端编码要求
+
+### 1. API 请求规范
+
+#### 1.1 请求工具说明
+
+项目封装了多个请求工具，位于 `@/utils/request/` 目录：
+
+- **`request.ts`**：易研平台标准请求（返回 `{ success, message, code, data }`，成功：`code === 200`）
+- **`requestJpaas.ts`**：JPAAS 平台请求（返回 `{ success, message, code, data, result }`，成功：`success ?? true`）
+- **`security.ts`**：安全相关请求（不添加 token）
+- **`requestForFile.ts`**：文件下载
+- **`requestFileHeaders.ts`**：带自定义请求头的文件请求
+
+**规则：**
+
+- ✅ **必须使用**项目封装的请求工具（`@/utils/request/request`、`@/utils/request/requestJpaas` 等），**禁止自己二次封装** axios 或请求工具
+- ❌ 禁止直接使用 axios
+- ✅ JPAAS 服务（`/api-bpm`、`/api-form`、`/api-system`、`/api-user`）→ `requestJpaas`
+- ✅ 易研平台（`/api`）→ `request`
+- ✅ 人事服务（`/api/240/hr`）→ `request`
+- ✅ 文件相关 → `requestForFile` 或 `requestFileHeaders`
+
+#### 1.2 API 接口文件规范
+
+- 按业务模块组织：`src/api/{模块名}/`
+- **必须**从 `@/utils/request/request` 或 `@/utils/request/requestJpaas` 导入，参考 `@/api/bpm` 目录的写法
+- 每个接口函数必须有 JSDoc 注释
+- 返回类型：`Promise<HttpResponse<T>>`
+
+#### 1.3 分页接口规范
+
+- 请求参数：`pageNum`、`pageSize`
+- 响应格式：`{ list: T[], total: number }`
+
+### 2. 开发模式规范（API + Hooks + 组件）
+
+**⚠️ 强制要求：前端开发必须采用 API + Hooks + 组件的三层开发方式！**
+
+```
+API 层（src/api/）      → 定义接口函数，封装 HTTP 请求
+    ↓
+Hooks 层（src/hooks/）  → 封装业务逻辑，管理状态和副作用
+    ↓
+组件层（src/components/、src/views/） → 使用数据，渲染 UI
+```
+
+- ❌ 禁止在组件中直接调用 API
+- ❌ 禁止在 API 层包含业务逻辑
+- ❌ **禁止自己封装请求工具**，必须使用项目封装的 `@/utils/request/`（request、requestJpaas 等）
+- ✅ 必须通过 Hooks 层连接 API 和组件
+
+### 3. 组件开发规范
+
+- ✅ 使用 `<script setup lang="ts">` + Composition API
+- ✅ Arco 图标已全局注册，直接使用 `<icon-plus />` 等
+- ✅ Props/Emits 使用 `defineProps<T>()`、`defineEmits<T>()` 泛型语法
+- ✅ 表单组件必须支持 `v-model`（modelValue + update:modelValue）
+- ✅ 优先使用 Arco Design 组件（a-scrollbar、a-empty、a-spin 等）
+
+### 4. TypeScript 规范
+
+- ✅ 所有 props、emits 必须有完整类型注解
+- ✅ 避免使用 `any`，使用类型守卫
+- ✅ 接口定义放在 `src/types/` 或组件同级 `types.ts`
+
+### 5. ESLint 规范
+
+- ✅ 禁止 `++`、`--`，使用 `+= 1`、`-= 1`
+- ✅ 优先 `const`，避免 `var`
+- ✅ 函数必须有明确返回类型
+- ✅ 未使用变量用 `_` 前缀
+
+### 6. 错误处理
+
+- ✅ API 调用必须用 `try-catch` 包裹
+- ✅ 错误用 `Message.error()` 提示
+- ✅ 关键错误记录 `console.error`
+
+### 7. Git 提交规范
+
+遵循 Conventional Commits：`<type>(<scope>): <subject>`
+
+- `feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`chore`
+
+---
+
+## 总结
+
+**生成的代码必须：**
+
+- ✅ **强制**使用 API + Hooks + 组件的三层开发方式
+- ✅ **必须**使用项目封装的 `@/utils/request/` 请求工具，禁止自己封装
+- ✅ 类型安全、尽量避免 `any`
+- ✅ 符合 Composition API 风格
+- ✅ 遵循 ESLint 规范
+- ✅ 包含完整 TypeScript 类型注解和 JSDoc 注释

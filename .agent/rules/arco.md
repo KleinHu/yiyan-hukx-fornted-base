@@ -1,6 +1,12 @@
 ---
+trigger: always_on
+---
+
+---
+
 name: yiyan-rules
 description: 易研 OA 前端项目开发规范与项目上下文
+
 ---
 
 # 易研 OA 前端项目（yiyan-hukx-fronted-oa）
@@ -63,5 +69,6 @@ src/
 4. **分页**：pageNum、pageSize；返回 list、total
 5. **组件**：script setup、Composition API、Arco 组件优先
 6. **Git**：Conventional Commits
+7. **icon 引入**：已经全局注册，不需要单独引入！
 
 详细规范见 `.cursor/rules/vue3-arcodesign-ts.mdc`。
