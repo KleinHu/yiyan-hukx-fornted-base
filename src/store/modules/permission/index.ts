@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import DASHBOARD from '@/router/routes/modules/dashboard';
 import BPM from '@/router/routes/modules/bpm';
+import WHITE_VIEWS from '@/router/routes/modules/whiteviews';
 import { REDIRECT_MAIN, REDIRECT_BUFF } from '@/router/routes/base';
 // import { appRoutes } from '@/router/routes';
 import { Router } from 'vue-router';
@@ -26,7 +27,7 @@ const usePermissionStore = defineStore('menu', {
   state: (): PermissionState => ({
     routers: [], // 当前路由，用于菜单和router，= 模块 + 静态路由或 = 全 + 静态路由
     modules: [], // 全路由
-    baseRouters: [...DASHBOARD, BPM, REDIRECT_MAIN, REDIRECT_BUFF],
+    baseRouters: [...DASHBOARD, BPM, WHITE_VIEWS, REDIRECT_MAIN, REDIRECT_BUFF],
     currentModule: undefined,
   }),
 

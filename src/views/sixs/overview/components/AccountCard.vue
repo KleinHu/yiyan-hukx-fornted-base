@@ -57,12 +57,12 @@
 <style scoped>
   .account-card {
     background: var(--color-bg-2);
-    border-radius: 12px;
-    padding: 12px 20px;
+    border-radius: 8px;
+    padding: 10px 14px;
     border: 1px solid var(--color-border-2);
     cursor: pointer;
     transition: all 0.25s cubic-bezier(0.34, 0.69, 0.1, 1);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.01);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.01);
   }
 
   /* 状态背景色 */
@@ -80,8 +80,8 @@
   }
 
   .account-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.04);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.04);
   }
   .account-card.excellent:hover {
     border-color: #00b42a;
@@ -102,27 +102,27 @@
   .user-profile {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
   }
 
   .right-actions {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
   }
 
   .avatar-wrap {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 600;
     background-color: #ffffff !important;
     border: 2px solid #ffffff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
   .excellent .avatar-wrap {
     color: #00b42a;
@@ -141,34 +141,34 @@
   }
 
   .user-name {
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 700;
     color: #1d2129;
   }
 
   .department {
-    font-size: 12px;
+    font-size: 11px;
     color: #4e5969;
   }
 
   .score-text {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: 700;
     font-family: 'Inter', -apple-system, system-ui;
     color: #1d2129;
   }
 
   .action-icon {
-    font-size: 14px;
+    font-size: 12px;
     color: #86909c;
-    margin-left: 4px;
+    margin-left: 2px;
     transition: all 0.2s;
     display: flex;
     align-items: center;
   }
 
   .account-card:hover .action-icon {
-    transform: translateX(3px);
+    transform: translateX(2px);
   }
   .account-card.excellent:hover .action-icon {
     color: #00b42a;
@@ -178,5 +178,79 @@
   }
   .account-card.serious:hover .action-icon {
     color: #f53f3f;
+  }
+
+  /* 响应式优化 - 与统计卡片同步 */
+  @media (max-width: 1200px) {
+    .account-card {
+      padding: 8px 12px;
+    }
+    .avatar-wrap {
+      width: 32px;
+      height: 32px;
+      font-size: 14px;
+    }
+    .user-name {
+      font-size: 13px;
+    }
+    .department {
+      font-size: 10px;
+    }
+    .score-text {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .account-card {
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+    .user-profile {
+      gap: 8px;
+    }
+    .avatar-wrap {
+      width: 28px;
+      height: 28px;
+      font-size: 12px;
+    }
+    .user-name {
+      font-size: 12px;
+    }
+    .department {
+      font-size: 10px;
+    }
+    .score-text {
+      font-size: 18px;
+    }
+    .action-icon {
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .account-card {
+      padding: 6px 8px;
+    }
+    .user-profile {
+      gap: 6px;
+    }
+    .right-actions {
+      gap: 4px;
+    }
+    .avatar-wrap {
+      width: 24px;
+      height: 24px;
+      font-size: 11px;
+    }
+    .user-name {
+      font-size: 11px;
+    }
+    .department {
+      font-size: 9px;
+    }
+    .score-text {
+      font-size: 16px;
+    }
   }
 </style>

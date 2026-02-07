@@ -15,6 +15,8 @@ export const WHITE_LIST = [
   // { name: 'BpmInstanceDetail', children: [] },
   // { name: 'BpmInstanceStart', children: [] },
   // { name: 'BpmTaskDetail', children: [] },
+  { name: 'ShareReport', children: [] },
+  { name: 'SixSOverviewPublic', children: [] },
 ];
 
 export const ROOT_MENU = { name: 'rootMenu' };

@@ -1,10 +1,6 @@
 <template>
   <div class="stats-container">
-    <a-grid
-      :cols="{ xs: 1, sm: 2, md: 5, lg: 5, xl: 5 }"
-      :col-gap="16"
-      :row-gap="16"
-    >
+    <a-grid :cols="5" :col-gap="12" :row-gap="12">
       <!-- 年份统计卡片 -->
       <a-grid-item>
         <div class="stat-card year-card">
@@ -129,29 +125,29 @@
 <style scoped>
   .stats-container {
     width: 100%;
-    margin-bottom: 24px;
+    margin-bottom: 16px;
   }
 
   .stat-card {
     background: var(--color-bg-2);
-    border-radius: 12px;
-    padding: 20px;
-    height: 120px;
+    border-radius: 8px;
+    padding: 12px 16px;
+    height: 80px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s cubic-bezier(0.34, 0.69, 0.1, 1);
     border: 1px solid var(--color-border-2);
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
   }
 
   .stat-card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
   }
 
-  /* 选中态样式 - 匹配 p3 高亮效果 */
+  /* 选中态样式 */
   .stat-card.active.all {
     border-color: #165dff;
     background-color: rgba(22, 93, 255, 0.02);
@@ -175,13 +171,13 @@
   }
   .year-card:hover {
     transform: none;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
   }
   .year-select-wrap {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 40px;
+    height: 32px;
   }
   /* 适配 a-year-picker 的样式 */
   :deep(.arco-picker) {
@@ -192,14 +188,14 @@
     justify-content: center;
   }
   :deep(.arco-picker-input-inner) {
-    font-size: 28px;
+    font-size: 20px;
     font-weight: 700;
     color: var(--color-text-1);
     text-align: center;
     padding: 0;
   }
   :deep(.arco-picker-suffix) {
-    font-size: 16px;
+    font-size: 14px;
     color: var(--color-text-3);
     margin-left: 4px;
   }
@@ -208,26 +204,26 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 32px; /* 匹配图标容器高度 */
+    height: 24px;
   }
 
   .stat-label {
     display: flex;
     align-items: center;
-    font-size: 14px;
+    font-size: 12px;
     color: var(--color-text-2);
     font-weight: 500;
     line-height: 1;
   }
 
   .stat-range {
-    font-size: 12px;
+    font-size: 11px;
     margin-left: 4px;
     font-weight: normal;
     color: var(--color-text-3);
   }
 
-  /* p2 中标签颜色跟随主体 */
+  /* 标签颜色跟随主体 */
   .excellent .stat-label {
     color: #00b42a;
   }
@@ -242,30 +238,70 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     border-radius: 50%;
   }
 
   .stat-icon {
-    font-size: 18px;
+    font-size: 14px;
   }
 
   .stat-value {
-    font-size: 36px;
+    font-size: 24px;
     font-weight: 700;
     line-height: 1;
     text-align: center;
     font-family: 'Inter', -apple-system, system-ui;
   }
 
-  @media (max-width: 768px) {
+  /* 小屏幕优化 - iframe 场景 */
+  @media (max-width: 1200px) {
     .stat-card {
-      height: 100px;
-      padding: 16px;
+      height: 70px;
+      padding: 10px 12px;
     }
     .stat-value {
-      font-size: 28px;
+      font-size: 20px;
+    }
+    .stat-label {
+      font-size: 11px;
+    }
+    .stat-icon-wrapper {
+      width: 20px;
+      height: 20px;
+    }
+    .stat-icon {
+      font-size: 12px;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stats-container {
+      margin-bottom: 12px;
+    }
+    .stat-card {
+      height: 60px;
+      padding: 8px 10px;
+      border-radius: 6px;
+    }
+    .stat-header {
+      height: 20px;
+    }
+    .stat-value {
+      font-size: 18px;
+    }
+    .stat-label {
+      font-size: 10px;
+    }
+    .stat-range {
+      font-size: 10px;
+    }
+    .year-select-wrap {
+      height: 24px;
+    }
+    :deep(.arco-picker-input-inner) {
+      font-size: 16px;
     }
   }
 </style>

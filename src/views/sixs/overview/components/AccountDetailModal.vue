@@ -74,6 +74,7 @@
             <span class="nav-text">概览 & 台账</span>
           </div>
           <div
+            v-if="!readonly"
             class="nav-item"
             :class="{ active: activeKey === 'add' }"
             @click="activeKey = 'add'"
@@ -153,7 +154,7 @@
                       }}{{ Math.abs(record.scoreDeducted) }}
                     </div>
                     <!-- 编辑 & 删除 -->
-                    <a-space :size="4" class="actions-wrapper">
+                    <a-space v-if="!readonly" :size="4" class="actions-wrapper">
                       <div
                         class="edit-action"
                         @click="handleEditRecord(record)"
@@ -334,10 +335,16 @@
     fillChecker(emp: Employee): void;
   }
 
-  const props = defineProps<{
-    visible: boolean;
-    item: SixSAccount;
-  }>();
+  const props = withDefaults(
+    defineProps<{
+      visible: boolean;
+      item: SixSAccount;
+      readonly?: boolean;
+    }>(),
+    {
+      readonly: false,
+    }
+  );
 
   const emit = defineEmits(['update:visible', 'success']);
 
