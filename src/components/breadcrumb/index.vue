@@ -4,7 +4,7 @@
       <icon-apps />
     </a-breadcrumb-item>
     <a-breadcrumb-item v-for="item in items" :key="item">
-      {{ $t(item) }}
+      {{ $t(item) === item ? item : $t(item) }}
     </a-breadcrumb-item>
   </a-breadcrumb>
 </template>
@@ -24,7 +24,8 @@
 
 <style scoped lang="less">
   .container-breadcrumb {
-    margin: 16px 0;
+    margin: 0 0 16px 0;
+    padding-top: 4px; /* 微调间距 */
     :deep(.arco-breadcrumb-item) {
       color: rgb(var(--gray-6));
       &:last-child {
