@@ -103,9 +103,24 @@
           </span>
         </template>
         <template #operations="{ record }">
-          <a-button type="text" size="small" @click="handleShowDetail(record)">
-            详情
-          </a-button>
+          <a-space>
+            <a-button
+              type="text"
+              size="small"
+              @click="handleShowDetail(record)"
+            >
+              详情
+            </a-button>
+            <a-popconfirm
+              content="确定要删除该流水吗？删除后将自动还原库存并级联删除相关单据！"
+              type="warning"
+              @ok="handleDelete(record)"
+            >
+              <a-button type="text" size="small" status="danger">
+                删除
+              </a-button>
+            </a-popconfirm>
+          </a-space>
         </template>
       </a-table>
     </a-card>
@@ -120,12 +135,13 @@
 
 <script setup lang="ts">
   import { ref, onMounted } from 'vue';
+  import { Message } from '@arco-design/web-vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
   import useInventoryRecord from '@/hooks/supplies/useInventoryRecord';
   import { IconSearch, IconRefresh } from '@arco-design/web-vue/es/icon';
   import RecordDetailDrawer from './components/RecordDetailDrawer.vue';
 
-  const { list, loading, pagination, queryParams, fetchPage } =
+  const { list, loading, pagination, queryParams, fetchPage, deleteRecord } =
     useInventoryRecord();
 
   const detailVisible = ref(false);
@@ -134,6 +150,13 @@
   const handleShowDetail = (record: any) => {
     currentRecord.value = record;
     detailVisible.value = true;
+  };
+
+  const handleDelete = async (record: any) => {
+    const success = await deleteRecord(record.id);
+    if (success) {
+      Message.success('流水已删除，库存已还原');
+    }
   };
 
   const columns = [

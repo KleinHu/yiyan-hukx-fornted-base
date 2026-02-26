@@ -214,6 +214,13 @@ export function getRecordPage(params: RecordQuery) {
   );
 }
 
+/**
+ * 删除库存流水
+ */
+export function deleteRecord(id: string | number) {
+  return request.delete<void>(`/api/240/oa/supplies/item/record/${id}`);
+}
+
 // --- 领用管理 API ---
 
 /**
@@ -257,6 +264,7 @@ export interface RequestQuery {
   userCode?: string;
   auditStatus?: number;
   year?: string;
+  orderNo?: string;
 }
 
 /**

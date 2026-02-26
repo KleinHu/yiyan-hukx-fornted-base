@@ -6,11 +6,6 @@
       <a-row justify="space-between" align="center" style="margin-bottom: 20px">
         <a-col :span="16">
           <a-space>
-            <a-button type="primary" @click="handleApply">
-              <template #icon><icon-plus /></template>
-              新建领用申请
-            </a-button>
-            <a-divider direction="vertical" />
             <a-radio-group
               v-model="queryParams.auditStatus"
               type="button"
@@ -48,9 +43,6 @@
         @view="handleViewTrigger"
       />
     </a-card>
-
-    <!-- 申请抽屉 -->
-    <ApplyDrawer v-model:visible="applyVisible" @submit="handleApplySubmit" />
 
     <!-- 审核抽屉 -->
     <AuditDrawer
@@ -108,11 +100,10 @@
   import { ref, onMounted, computed } from 'vue';
   import Breadcrumb from '@/components/breadcrumb/index.vue';
   import useSuppliesRequest from '@/hooks/supplies/useSuppliesRequest';
-  import ApplyDrawer from './components/ApplyDrawer.vue';
   import AuditDrawer from './components/AuditDrawer.vue';
   import RequestTable from './components/RequestTable.vue';
 
-  const { list, loading, pagination, queryParams, fetchPage, apply, audit } =
+  const { list, loading, pagination, queryParams, fetchPage, audit } =
     useSuppliesRequest();
 
   onMounted(() => {
@@ -130,19 +121,6 @@
   const handleReset = () => {
     queryParams.value.auditStatus = -1;
     fetchPage({ pageNo: 1 });
-  };
-
-  // 申请逻辑
-  const applyVisible = ref(false);
-  const handleApply = () => {
-    applyVisible.value = true;
-  };
-  const handleApplySubmit = async (data: any) => {
-    const success = await apply(data);
-    if (success) {
-      applyVisible.value = false;
-      fetchPage({ pageNo: 1 });
-    }
   };
 
   // 审核逻辑

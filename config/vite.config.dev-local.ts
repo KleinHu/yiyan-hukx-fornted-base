@@ -20,25 +20,25 @@ export default mergeConfig(
         // ===== JPAAS 相关请求（必须先匹配，避免被 /api 规则捕获）=====
         '^/api/api-bpm': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''), // /api/api-bpm/... -> /api-bpm/...
         },
         '^/api/api-form': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''), // /api/api-form/... -> /api-form/...
         },
         '^/api/api-system': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''), // /api/api-system/... -> /api-system/...
         },
         '^/api/api-user': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
           rewrite: (path: string) => path.replace(/^\/api/, ''), // /api/api-user/... -> /api-user/...
         },
@@ -46,17 +46,17 @@ export default mergeConfig(
         // ===== 直接访问格式（不带 /api 前缀）=====
         '^/api-bpm': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
         },
         '^/api-form': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
         },
         '^/api-system': {
           // target: 'http://localhost:9900',
-          target: 'http://162.14.102.209:9900',
+          target: 'http://hukx-Macmini.local:9900',
           changeOrigin: true,
         },
 
@@ -77,7 +77,7 @@ export default mergeConfig(
         // ===== 易研平台其他请求（最后匹配）=====
         '^/api': {
           // target: 'http://localhost:39996',
-          target: 'http://162.14.102.209:39996',
+          target: 'http://hukx-Macmini.local:39996',
           changeOrigin: true,
           // 注意：不要重写路径，保留 /api 前缀
         },

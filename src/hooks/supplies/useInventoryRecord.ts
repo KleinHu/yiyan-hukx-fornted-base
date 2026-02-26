@@ -41,11 +41,26 @@ export default function useInventoryRecord() {
     }
   };
 
+  /**
+   * 删除流水记录 (级联还原)
+   */
+  const deleteRecord = async (id: string | number) => {
+    try {
+      loading.value = true;
+      await suppliesApi.deleteRecord(id);
+      await fetchPage(); // 刷新列表
+      return true;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   return {
     list,
     loading,
     pagination,
     queryParams,
     fetchPage,
+    deleteRecord,
   };
 }

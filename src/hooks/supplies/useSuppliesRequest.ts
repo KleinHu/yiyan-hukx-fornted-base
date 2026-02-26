@@ -135,12 +135,23 @@ export default function useSuppliesRequest() {
     }
   };
 
+  /**
+   * 查询我的领用记录
+   */
+  const fetchMyPage = async (params?: Partial<RequestQuery>) => {
+    return fetchPage({
+      ...params,
+      userCode: userStore.userCode,
+    });
+  };
+
   return {
     list,
     loading,
     pagination,
     queryParams,
     fetchPage,
+    fetchMyPage,
     apply,
     audit,
   };
