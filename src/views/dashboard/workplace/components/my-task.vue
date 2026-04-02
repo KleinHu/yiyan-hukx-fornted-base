@@ -32,7 +32,7 @@
         :loading="loading"
         :pagination="pagination"
         :bordered="false"
-        :scroll="{ x: 1200, y: 240 }"
+        :scroll="{ x: 1200, y: 280 }"
         size="middle"
         @page-change="onPageChange"
         @page-size-change="onPageSizeChange"
@@ -207,6 +207,9 @@
       // empty
     }
   };
+
+  // 暴露待办数量供父组件使用
+  defineExpose({ pendingCount });
 </script>
 
 <style scoped lang="less">

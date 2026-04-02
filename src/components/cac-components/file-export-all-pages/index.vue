@@ -42,7 +42,7 @@
 <!--新script-->
 <script lang="ts" setup>
   import * as XLSX from 'xlsx';
-  import { computed, ref, toRefs, watch } from 'vue';
+  import { computed, ref, toRefs, watch, CSSProperties } from 'vue';
   import request from '@/utils/request/request';
   import { Notification } from '@arco-design/web-vue';
   import StandardIcon from '@/components/standard-menu/standard-icon.vue';
@@ -158,10 +158,10 @@
   const allData = ref<any[]>([]); // 全量数据
   const totalPage = ref<number>(0); // 总页数
   const percent = ref<number>(0); // 导出进度百分比
-  const progressStyle = ref<object>({}); // 进度条样式
+  const progressStyle = ref<CSSProperties>({}); // 进度条样式
   const progressing = ref<boolean>(false); // 进度条是否显示
   const fileExportVisual = ref<boolean>(true); // 按钮是否显示
-  const progStatus = ref<string>('normal'); // 进度条状态
+  const progStatus = ref<'success' | 'normal' | 'warning' | 'danger'>('normal'); // 进度条状态
   /**
    * computed
    */
@@ -236,44 +236,43 @@
         // 升序（asc）/降序（desc）
         req.sord = sord.value;
       }
-      getData(req, 'get')
-        .then((res: any) => {
-          if (res.code === 200) {
-            const { data } = res;
-            // 转换
-            const initPageData = data.list;
-            initPageData.forEach((item: any) => {
-              // item：导出数据中的一条
-              chsDealFields.value.forEach((element: any) => {
-                // element：要转换的一个字段
-                if (item[element.field]) {
-                  if (element.codeList && element.codeList.length > 0) {
-                    element.codeList.forEach((ele: any) => {
-                      // ele：转换的那个字段中的每个编码及其对应中文
-                      if (item[element.field] === ele.value) {
-                        item[element.field] = ele.name;
-                      }
-                    });
-                  }
+      getData(req, 'get').then((res: any) => {
+        if (res.code === 200) {
+          const { data } = res;
+          // 转换
+          const initPageData = data.list;
+          initPageData.forEach((item: any) => {
+            // item：导出数据中的一条
+            chsDealFields.value.forEach((element: any) => {
+              // element：要转换的一个字段
+              if (item[element.field]) {
+                if (element.codeList && element.codeList.length > 0) {
+                  element.codeList.forEach((ele: any) => {
+                    // ele：转换的那个字段中的每个编码及其对应中文
+                    if (item[element.field] === ele.value) {
+                      item[element.field] = ele.name;
+                    }
+                  });
                 }
-              });
+              }
             });
-            pageData.value = initPageData; // 单页数据
-            allData.value.splice(0, 0, ...pageData.value); // 逐页将获取到的数据合并
-            if (pageNumber < totalPage.value) {
-              percent.value = Number((pageNumber / totalPage.value).toFixed(1));
-            } else if (pageNumber === totalPage.value) {
-              percent.value = 1;
-            }
-            resolve(res);
-          } else {
-            Notification.error({
-              title: '获取数据失败，请刷新重试！',
-              content: res.message,
-            });
-            reject();
+          });
+          pageData.value = initPageData; // 单页数据
+          allData.value.splice(0, 0, ...pageData.value); // 逐页将获取到的数据合并
+          if (pageNumber < totalPage.value) {
+            percent.value = Number((pageNumber / totalPage.value).toFixed(1));
+          } else if (pageNumber === totalPage.value) {
+            percent.value = 1;
           }
-        })
+          resolve(res);
+        } else {
+          Notification.error({
+            title: '获取数据失败，请刷新重试！',
+            content: res.message,
+          });
+          reject();
+        }
+      });
     });
   };
   const getAllData = () => {
@@ -321,7 +320,7 @@
     // 每次点击导出按钮时都先把上次的数据清一下
     allData.value = [];
     percent.value = 0;
-    progStatus.value = 'active';
+    progStatus.value = 'normal';
     // 获取所有数据
     await getAllData();
     // 数据表格

@@ -3,8 +3,8 @@
     :visible="visible"
     title="流水详情说明"
     width="650px"
-    @cancel="$emit('update:visible', false)"
     :footer="false"
+    @cancel="$emit('update:visible', false)"
   >
     <a-spin :loading="loading" style="width: 100%">
       <div v-if="record" class="detail-container">

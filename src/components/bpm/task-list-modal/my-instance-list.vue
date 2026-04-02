@@ -7,7 +7,7 @@
       @change="handleSearch"
     />
     <a-table
-      v-model:selectedKeys="selectedKeys"
+      v-model:selected-keys="selectedKeys"
       :columns="COLUMNS"
       :data="list"
       row-key="instId"

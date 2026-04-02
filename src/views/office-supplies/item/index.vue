@@ -60,7 +60,7 @@
               :loading="loading"
               :pagination="pagination"
               @page-change="onPageChange"
-              @pageSizeChange="onPageSizeChange"
+              @page-size-change="onPageSizeChange"
               @edit="handleItemEdit"
               @inventory-change="handleInventoryTrigger"
               @delete="remove"
@@ -70,10 +70,10 @@
               :data="list"
               :loading="loading"
               :pagination="pagination"
-              @pageChange="onPageChange"
-              @pageSizeChange="onPageSizeChange"
+              @page-change="onPageChange"
+              @page-size-change="onPageSizeChange"
               @edit="handleItemEdit"
-              @inventoryChange="handleInventoryTrigger"
+              @inventory-change="handleInventoryTrigger"
               @delete="remove"
             />
           </keep-alive>

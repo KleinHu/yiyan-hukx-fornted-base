@@ -125,9 +125,49 @@ const usePermissionStore = defineStore('menu', {
       this.modules = [...asyncRouters];
       this.routers = [...this.baseRouters, ...asyncRouters];
       if (router) {
-        // 加入来自后端的动态路由
-        asyncRouters.forEach((e) => {
-          router.addRoute({ ...e, path: `/${e.path}` });
+        // 关键修复：平铺化注册路由。
+        // 将所有嵌套的叶子页面直接平铺到根 Layout 下，从而彻底解决嵌套 KeepAlive 缓存失效这一 Vue 3 历史难题。
+        const flatten = (nodes: any[], parentPath = '', result: any[] = []) => {
+          nodes.forEach((node) => {
+            const currentPath = `${parentPath}/${node.path || ''}`.replace(
+              /\/+/g,
+              '/'
+            );
+            if (node.children && node.children.length > 0) {
+              flatten(node.children, currentPath, result);
+            } else {
+              result.push({ ...node, path: currentPath });
+            }
+          });
+          return result;
+        };
+
+        asyncRouters.forEach((moduleRoute) => {
+          // 1. 首先尝试注册模块根路径（供导航搜索使用）
+          router.addRoute({ ...moduleRoute, path: `/${moduleRoute.path}` });
+          // 2. 深度遍历并将所有子页面平铺注册到 Layout 下，使其直接接受 PageLayout 的缓存管理
+          if (moduleRoute.children) {
+            const flatNodes = flatten(
+              moduleRoute.children,
+              `/${moduleRoute.path || ''}`
+            );
+            flatNodes.forEach((node) => {
+              const { component, ...rest } = node;
+              router.addRoute({
+                ...rest,
+                name: `${rest.name}_proxy`, // 代理路由名，避免重复
+                component: Layout,
+                children: [
+                  {
+                    path: '',
+                    name: rest.name, // 真正的组件名，对应缓存 key
+                    component,
+                    meta: rest.meta,
+                  },
+                ],
+              });
+            });
+          }
         });
       }
 
@@ -150,9 +190,41 @@ const usePermissionStore = defineStore('menu', {
       this.currentModule = currentModule;
       this.routers = [...this.baseRouters];
       if (currentModule?.children) {
-        currentModule.children.forEach((elem: any) => {
-          elem = { ...elem, path: `/${elem.path}`, component: Layout };
-          router.addRoute(elem);
+        const flatten = (nodes: any[], parentPath = '', result: any[] = []) => {
+          nodes.forEach((node) => {
+            const currentPath = `${parentPath}/${node.path || ''}`.replace(
+              /\/+/g,
+              '/'
+            );
+            if (node.children && node.children.length > 0) {
+              flatten(node.children, currentPath, result);
+            } else {
+              result.push({ ...node, path: currentPath });
+            }
+          });
+          return result;
+        };
+
+        const flatList = flatten(
+          currentModule.children,
+          `/${currentModule.path || ''}`
+        );
+
+        flatList.forEach((elem: any) => {
+          const { component, ...rest } = elem;
+          router.addRoute({
+            ...rest,
+            name: `${rest.name}_proxy`,
+            component: Layout,
+            children: [
+              {
+                path: '',
+                name: rest.name,
+                component,
+                meta: rest.meta,
+              },
+            ],
+          });
         });
         this.routers = [...this.baseRouters, ...currentModule.children];
       }

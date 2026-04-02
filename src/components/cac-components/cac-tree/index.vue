@@ -103,7 +103,7 @@
     },
     showSearch: { type: Boolean, default: true }, // 是否显示搜索框
     searchPlaceholder: { type: String, default: '关键字' }, // 搜索框提示内容
-    defaultParams: { type: Object, default: () => {} }, // 默认搜索条件
+    defaultParams: { type: Object, default: () => ({}) }, // 默认搜索条件
   });
 
   const { fieldNames, url, defaultParams } = toRefs(props); // 根据props创建多个 ref 对象

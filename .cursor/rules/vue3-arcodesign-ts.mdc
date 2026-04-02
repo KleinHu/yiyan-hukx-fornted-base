@@ -126,10 +126,15 @@ Hooks 层（src/hooks/）  → 封装业务逻辑，管理状态和副作用
 ### 3. 组件开发规范
 
 - ✅ 使用 `<script setup lang="ts">` + Composition API
-- ✅ Arco 图标已全局注册，直接使用 `<icon-plus />` 等
+- ✅ Arco 图标已全局注册，直接使用 `<icon-plus />` 等，❌ 禁止在组件内重复从 `@arco-design/web-vue/es/icon` 导入。
+- ✅ **数据交互加载动画**：❌ 禁止在组件内随意定义 `const loading = ref(false)` 用于接口请求/表格数据展示的 loading 态。✅ 必须统一从对应的业务 Hook（如 `const { loading } = useArticle()`）中解构获取使用，以确保分页、搜索等操作的加载动画不会因为局部变量漏设而失效。
 - ✅ Props/Emits 使用 `defineProps<T>()`、`defineEmits<T>()` 泛型语法
 - ✅ 表单组件必须支持 `v-model`（modelValue + update:modelValue）
-- ✅ 优先使用 Arco Design 组件（a-scrollbar、a-empty、a-spin 等）
+- ✅ 优先使用 Arco Design 组件（a-scrollbar、a-empty, a-spin 等）
+- ✅ **组件命名强制性**：所有页面级组件（views/ 下的视图）**必须**包含一个独立的 `<script lang="ts">` 块，并显式 `export default { name: '...' }`。
+  - **原因**：本项目采用“路由平铺化”方案，`keep-alive` 缓存和动态组件匹配依赖精准的组组件名。
+- ✅ **功能拆分解耦（管理 vs 审批）**：在实现内容分发类（如文章、任务）的管理模块时，**必须**将“审核/审批（Audit/Approval）”功能单独剥离为独立的视图页面（如 `audit-list.vue`）。
+  - **规则**：主管理页面（`index.vue`）负责增删改查及上下线维护；审批专用页面负责处理审核流程流转，确保角色功能纯粹，方便动态配置菜单权限。
 
 ### 4. TypeScript 规范
 

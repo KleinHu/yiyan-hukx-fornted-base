@@ -11,26 +11,14 @@
       <template #title>
         <div class="card-title">
           <icon-check-circle-fill class="title-icon" />
-          <span>系统待办</span>
-          <a-tag
-            color="red"
-            size="small"
-            style="margin-left: 8px; border-radius: 10px"
-          >
-            {{ todoDataList.length }} 个待办
-          </a-tag>
+          <span>任务待办</span>
         </div>
       </template>
       <template #extra>
-        <a-dropdown>
-          <a-link><icon-more /></a-link>
-          <template #content>
-            <a-doption @click="getTodoList">刷新</a-doption>
-          </template>
-        </a-dropdown>
+        <a-link @click="getTodoList"><icon-refresh /> 刷新</a-link>
       </template>
       <div class="todo-list-wrapper">
-        <div class="todo-list">
+        <div v-if="todoDataList.length > 0" class="todo-list">
           <div
             v-for="item in todoDataList"
             :key="item.id"
@@ -68,6 +56,7 @@
             </div>
           </div>
         </div>
+        <a-empty v-else style="margin-top: 60px" description="暂无任务待办" />
       </div>
     </a-card>
   </a-spin>
@@ -77,7 +66,7 @@
   // import { ref } from 'vue';
   import useLoading from '@/hooks/loading';
   import { Notification } from '@arco-design/web-vue';
-  import { onMounted, ref } from 'vue';
+  import { onMounted, ref, computed } from 'vue';
   import {
     queryTodoRecordListByPage,
     deleteTodoRecord,
@@ -155,6 +144,10 @@
   onMounted(() => {
     getTodoList();
   });
+
+  // 暴露待办数量供父组件使用
+  const todoCount = computed(() => todoDataList.value.length);
+  defineExpose({ todoCount });
 </script>
 
 <style scoped lang="less">

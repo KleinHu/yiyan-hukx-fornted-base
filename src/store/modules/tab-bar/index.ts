@@ -58,6 +58,12 @@ const useAppStore = defineStore('tabBar', {
       this.tagList.splice(idx, 1);
       this.cacheTabList.delete(tag.name);
     },
+    deleteTagByFullPath(fullPath: string) {
+      const idx = this.tagList.findIndex((item) => item.fullPath === fullPath);
+      if (idx > -1) {
+        this.deleteTag(idx, this.tagList[idx]);
+      }
+    },
     addCache(name: string) {
       if (isString(name) && name !== '') this.cacheTabList.add(name);
     },

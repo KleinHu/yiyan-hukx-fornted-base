@@ -3,8 +3,8 @@
     :visible="visible"
     title="人员领用明细"
     width="800px"
-    @cancel="$emit('update:visible', false)"
     :footer="false"
+    @cancel="$emit('update:visible', false)"
   >
     <div class="drawer-header-info">
       <a-descriptions :column="2" size="small">

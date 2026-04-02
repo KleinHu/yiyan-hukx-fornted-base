@@ -1,7 +1,7 @@
 <template>
   <a-spin style="display: block" :loading="loading">
     <a-tabs
-      v-model:activeKey="messageType"
+      v-model:active-key="messageType"
       type="rounded"
       destroy-on-hide
       @tab-click="fetchSourceData"

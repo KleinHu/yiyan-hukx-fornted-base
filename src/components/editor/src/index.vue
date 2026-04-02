@@ -1,13 +1,12 @@
 <!-- 组件wangeditor -->
 <!-- 使用方式 <Editor v-model="text" /> -->
 <template>
-  <div
-    class="border-1 border-solid border-[var(--tags-view-border-color)] z-10"
-  >
+  <div class="editor-container">
     <!-- 工具栏 -->
     <Toolbar
       :editor="editorRef"
       :editor-id="editorId"
+      :default-config="toolbarConfig"
       class="border-0 b-b-1 border-solid border-[var(--tags-view-border-color)]"
     />
     <!-- 编辑器 -->
@@ -39,13 +38,20 @@
     i18nChangeLanguage,
     IDomEditor,
     IEditorConfig,
+    IToolbarConfig,
+    Boot,
   } from '@wangeditor/editor';
+  import attachmentModule from '@wangeditor/plugin-upload-attachment';
+  import request from '@/utils/request/request';
   import { isNumber } from '@/utils/is';
-  import { getToken } from '@/utils/auth';
+
+  // 注册附件上传插件 (增加全局标记防止多页面/多实例重复注册导致报错)
+  if (!(window as any).WANG_EDITOR_ATTACHMENT_REGISTERED) {
+    Boot.registerModule(attachmentModule);
+    (window as any).WANG_EDITOR_ATTACHMENT_REGISTERED = true;
+  }
 
   defineOptions({ name: 'Editor' });
-
-  type InsertFnType = (url: string, alt: string, href: string) => void;
 
   i18nChangeLanguage('zh-CN');
 
@@ -119,93 +125,98 @@
       autoFocus: false,
       scroll: true,
       MENU_CONF: {
-        // eslint-disable-next-line no-useless-computed-key
-        ['uploadImage']: {
-          server: import.meta.env.VITE_UPLOAD_URL,
-          // 单个文件的最大体积限制，默认为 2M
-          maxFileSize: 5 * 1024 * 1024,
-          // 最多可上传几个文件，默认为 100
-          maxNumberOfFiles: 10,
-          // 选择文件时的类型限制，默认为 ['image/*'] 。如不想限制，则设置为 []
-          allowedFileTypes: ['image/*'],
-          // 自定义增加 http  header
-          headers: {
-            Accept: '*',
-            Authorization: `Bearer${getToken()}`,
-          },
-          // 超时时间，默认为 10 秒
-          timeout: 5 * 1000, // 5 秒
-          // form-data fieldName，后端接口参数名称，默认值wangeditor-uploaded-image
-          fieldName: 'file',
-          // 上传之前触发
-          onBeforeUpload(file: File) {
-            // console.log(file)
-            return file;
-          },
-          // 上传进度的回调函数
-          onProgress(progress: number) {
-            // progress 是 0-100 的数字
-            console.log('progress', progress);
-          },
-          onSuccess(file: File, res: any) {
-            console.log('onSuccess', file, res);
-          },
-          onFailed(file: File, res: any) {
-            console.log('onFailed', file, res);
-          },
-          onError(file: File, err: any, res: any) {
-            console.error('onError', file, err, res);
-          },
-          // 自定义插入图片
-          customInsert(res: any, insertFn: InsertFnType) {
-            insertFn(res.data, 'image', res.data);
+        uploadImage: {
+          // 自定义上传：直接调用接口，绕过 Uppy 队列，解决重复文件报错
+          async customUpload(file: File, insertFn: any) {
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+              const res: any = await request.post(
+                '/api/240/hr/file/upload',
+                formData,
+                {
+                  headers: { 'Content-Type': 'multipart/form-data' },
+                }
+              );
+              if (res.code === 200) {
+                const url = res.data?.url || res.data;
+                if (url) {
+                  insertFn(url, file.name, url);
+                } else {
+                  Message.error('服务器未返回图片地址');
+                }
+              }
+            } catch (err: any) {
+              Message.error('图片预览上传失败');
+            }
           },
         },
-        // eslint-disable-next-line no-useless-computed-key
-        ['uploadVideo']: {
-          server: import.meta.env.VITE_UPLOAD_URL,
-          // 单个文件的最大体积限制，默认为 10M
-          maxFileSize: 10 * 1024 * 1024,
-          // 最多可上传几个文件，默认为 100
-          maxNumberOfFiles: 10,
-          // 选择文件时的类型限制，默认为 ['video/*'] 。如不想限制，则设置为 []
-          allowedFileTypes: ['video/*'],
-          // 自定义增加 http  header
-          headers: {
-            Accept: '*',
-            Authorization: `Bearer${getToken()}`,
+        uploadVideo: {
+          async customUpload(file: File, insertFn: any) {
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+              const res: any = await request.post(
+                '/api/240/hr/file/upload',
+                formData,
+                {
+                  headers: { 'Content-Type': 'multipart/form-data' },
+                }
+              );
+              if (res.code === 200) {
+                const url = res.data?.url || res.data;
+                if (url) {
+                  insertFn(url, '');
+                } else {
+                  Message.error('服务器未返回视频地址');
+                }
+              }
+            } catch (err: any) {
+              Message.error('视频预览上传失败');
+            }
           },
-          // 超时时间，默认为 30 秒
-          timeout: 15 * 1000, // 15 秒
-          // form-data fieldName，后端接口参数名称，默认值wangeditor-uploaded-image
-          fieldName: 'file',
-          // 上传之前触发
-          onBeforeUpload(file: File) {
-            // console.log(file)
-            return file;
-          },
-          // 上传进度的回调函数
-          onProgress(progress: number) {
-            // progress 是 0-100 的数字
-            console.log('progress', progress);
-          },
-          onSuccess(file: File, res: any) {
-            console.log('onSuccess', file, res);
-          },
-          onFailed(file: File, res: any) {
-            Message.error(res.message);
-            console.log('onFailed', file, res);
-          },
-          onError(file: File, err: any, res: any) {
-            Message.error(res.message);
-            console.error('onError', file, err, res);
-          },
-          // 自定义插入图片
-          customInsert(res: any, insertFn: InsertFnType) {
-            insertFn(res.data, 'mp4', res.data);
+        },
+        // 附件上传配置
+        uploadAttachment: {
+          async customUpload(file: File, insertFn: any) {
+            const formData = new FormData();
+            formData.append('file', file);
+            try {
+              const res: any = await request.post(
+                '/api/240/hr/file/upload',
+                formData,
+                {
+                  headers: { 'Content-Type': 'multipart/form-data' },
+                }
+              );
+              if (res.code === 200) {
+                const url = res.data?.url || res.data;
+                if (url) {
+                  // 插入附件：url, 附件名
+                  insertFn(file.name, url);
+                } else {
+                  Message.error('服务器未返回附件地址');
+                }
+              }
+            } catch (err: any) {
+              Message.error('附件上传失败');
+            }
           },
         },
       },
+    };
+  });
+
+  // 工具栏配置
+  const toolbarConfig = computed((): Partial<IToolbarConfig> => {
+    return {
+      insertKeys: {
+        index: 22, // 插入在视频后面
+        keys: ['uploadAttachment'],
+      },
+      excludeKeys: [
+        'fullScreen', // 已经外层封装全屏或不需要
+      ],
     };
   });
 
@@ -238,4 +249,15 @@
   });
 </script>
 
+<style lang="less">
+  .editor-container {
+    border: 1px solid var(--color-border-2);
+    z-index: 10;
+  }
+
+  /* 解决 WangEditor 全屏模式下自适应和层级问题 */
+  .w-e-full-screen-container {
+    z-index: 10000 !important;
+  }
+</style>
 <style src="@wangeditor/editor/dist/css/style.css"></style>

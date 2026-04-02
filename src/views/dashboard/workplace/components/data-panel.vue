@@ -14,11 +14,13 @@
             <component :is="item.icon" :style="{ color: item.iconColor }" />
           </div>
           <div class="stat-trend">
-            <span :class="item.trend > 0 ? 'up' : 'down'">
-              <icon-caret-up v-if="item.trend > 0" />
-              <icon-caret-down v-else />
-              {{ Math.abs(item.trend) }}%
+            <span v-if="item.trend > 0" class="up">
+              <icon-caret-up /> {{ item.trend }}%
             </span>
+            <span v-else-if="item.trend < 0" class="down">
+              <icon-caret-down /> {{ Math.abs(item.trend) }}%
+            </span>
+            <span v-else class="neutral"> 持平 </span>
           </div>
         </div>
         <div class="stat-main">
@@ -41,53 +43,84 @@
 </template>
 
 <script lang="ts" setup>
-  import { computed } from 'vue';
-  import { useI18n } from 'vue-i18n';
+  import { ref, computed, onMounted } from 'vue';
+  import { getArticleDashboardStats } from '@/api/article';
 
-  const { t } = useI18n();
+  const publishedCount = ref(0);
+  const recentPublishedCount = ref(0);
+  const hotViewCount = ref(0);
+  const columnCount = ref(0);
+
+  const publishedTrend = ref(0);
+  const recentPublishedTrend = ref(0);
+  const hotViewTrend = ref(0);
+  const columnTrend = ref(0);
 
   const statData = computed(() => [
     {
-      title: t('workplace.onlineContent'),
-      value: '373.5',
-      trend: 12.5,
-      footer: '较上月',
+      title: '线上总文章',
+      value: publishedCount.value,
+      trend: publishedTrend.value,
+      footer: '较上月新增比',
       icon: 'icon-file',
       iconColor: '#1890ff',
       bgColor: '#e8f3ff',
       chartColor: '#1890ff',
     },
     {
-      title: t('workplace.putIn'),
-      value: '368',
-      trend: -2.4,
-      footer: '较昨日',
+      title: '近一周上线',
+      value: recentPublishedCount.value,
+      trend: recentPublishedTrend.value,
+      footer: '较上周产出比',
       icon: 'icon-drive-file',
       iconColor: '#722ed1',
       bgColor: '#f3f0ff',
       chartColor: '#722ed1',
     },
     {
-      title: t('workplace.newDay'),
-      value: '8,874',
-      trend: 5.8,
-      footer: '活跃互动',
-      icon: 'icon-message',
+      title: 'TOP10 活跃热度',
+      value: hotViewCount.value,
+      trend: hotViewTrend.value,
+      footer: '较上周热度比',
+      icon: 'icon-eye',
       iconColor: '#fa8c16',
       bgColor: '#fff7e8',
       chartColor: '#fa8c16',
     },
     {
-      title: t('workplace.newFromYesterday'),
-      value: '2.8%',
-      trend: 0.5,
-      footer: '稳定增长',
-      icon: 'icon-bar-chart',
+      title: '启用文章专栏',
+      value: columnCount.value,
+      trend: columnTrend.value,
+      footer: '结构稳定性',
+      icon: 'icon-apps',
       iconColor: '#52c41a',
       bgColor: '#e8ffea',
       chartColor: '#52c41a',
     },
   ]);
+
+  const fetchStats = async () => {
+    try {
+      const { data } = await getArticleDashboardStats();
+      if (data) {
+        publishedCount.value = data.publishedCount || 0;
+        recentPublishedCount.value = data.recentPublishedCount || 0;
+        hotViewCount.value = data.hotViewCount || 0;
+        columnCount.value = data.columnCount || 0;
+
+        publishedTrend.value = data.publishedTrend || 0;
+        recentPublishedTrend.value = data.recentPublishedTrend || 0;
+        hotViewTrend.value = data.hotViewTrend || 0;
+        columnTrend.value = data.columnTrend || 0;
+      }
+    } catch (err) {
+      // 容错处理
+    }
+  };
+
+  onMounted(() => {
+    fetchStats();
+  });
 
   const getMiniChartOption = (color: string) => {
     return {
@@ -127,18 +160,19 @@
   }
 
   .stat-card {
-    padding: 20px;
+    padding: 16px;
     background-color: var(--color-bg-2);
-    border-radius: 8px;
+    border-radius: 10px;
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     transition: all 0.3s;
+    border: 1px solid var(--color-border-1);
 
     &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
   }
 
@@ -146,17 +180,17 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
   }
 
   .stat-icon-wrapper {
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
   }
 
   .stat-trend {
@@ -168,6 +202,9 @@
     }
     .down {
       color: #f5222d;
+    }
+    .neutral {
+      color: #8c8c8c;
     }
   }
 
@@ -188,10 +225,10 @@
   }
 
   .stat-value {
-    font-size: 24px;
+    font-size: 22px;
     font-weight: bold;
     color: var(--color-text-1);
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
 
   .stat-footer {

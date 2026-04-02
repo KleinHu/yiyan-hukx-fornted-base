@@ -185,7 +185,7 @@
       const { data } = await suppliesApi.getCategoryTree();
       categoryTreeData.value = data || [];
     } catch (error) {
-      console.error('获取分类失败', error);
+      // 获取分类失败
     }
   };
 

@@ -91,7 +91,7 @@
                   item.hasOwnProperty('placeholder') ? item.placeholder : '无'
                 "
                 :disabled="true"
-                @change="(val) => onchangeNumber(val, item.fieldName)"
+                @change="(val: any) => onchangeNumber(val, item.fieldName)"
               />
               <a-select
                 v-else-if="item.type === 'select'"
@@ -109,7 +109,7 @@
                 :placeholder="
                   item.hasOwnProperty('placeholder') ? item.placeholder : '无'
                 "
-                @change="(value) => onchangeSelect(value, item.fieldName)"
+                @change="(value: any) => onchangeSelect(value, item.fieldName)"
               >
               </a-select>
               <a-tree-select
@@ -127,7 +127,7 @@
                 :placeholder="
                   item.hasOwnProperty('placeholder') ? item.placeholder : '无'
                 "
-                @change="(value) => onchangeSelect(value, item.fieldName)"
+                @change="(value: any) => onchangeSelect(value, item.fieldName)"
               ></a-tree-select>
               <!--
               <a-cascader v-else-if="item.type === 'cascader'" :options="item.optionList || []" default-value="chaoyang" expand-trigger="hover" :style="{width:'320px'}"/>
@@ -150,7 +150,7 @@
                 :placeholder="
                   item.hasOwnProperty('placeholder') ? item.placeholder : '无'
                 "
-                @change="(value) => onchangeCascade(value, item.fieldName)"
+                @change="(value: any) => onchangeCascade(value, item.fieldName)"
               >
               </a-cascader>
               <a-radio-group
@@ -159,7 +159,7 @@
                 :style="item.hasOwnProperty('style') ? item.style : ''"
                 :disabled="true"
                 :options="item.hasOwnProperty('options') ? item.options : []"
-                @change="(value) => onchangeRadioGroup(value, item.fieldName)"
+                @change="(value: any) => onchangeRadioGroup(value, item.fieldName)"
               />
               <dictionary-select
                 v-else-if="item.type === 'dictionary'"
@@ -179,7 +179,7 @@
                   item.hasOwnProperty('placeholder') ? item.placeholder : '无'
                 "
                 @change="
-                  (value) =>
+                  (value: any) =>
                     onchangeDictSelect(
                       value,
                       item.fieldName,
@@ -198,7 +198,7 @@
                 "
                 :show-time="item.showtime"
                 @change="
-                  (date, dateString) =>
+                  (date: any, dateString: any) =>
                     onchangeDate(date, dateString, item.fieldName)
                 "
               />
@@ -229,13 +229,13 @@
                 v-else-if="item.type === 'file'"
                 :file-list="form[item.fieldName]"
                 :multiple="item.multiple"
-                :remove="(file) => handleRemove(file, item.fieldName)"
+                :remove="(file: any) => handleRemove(file, item.fieldName)"
                 :accept="item.accept"
                 :disabled="true"
                 @before-upload="
-                  (file) => beforeUpload(file, item.fieldName, item.single)
+                  (file: any) => beforeUpload(file, item.fieldName, item.single)
                 "
-                @change="(info) => onchangeFile(info, item.fieldName)"
+                @change="(info: any) => onchangeFile(info, item.fieldName)"
               >
                 <a-button>
                   {{
@@ -260,14 +260,16 @@
 
 <!--新script-->
 <script lang="ts" setup>
-  import { ref, toRefs, watch, nextTick, onMounted, defineExpose } from 'vue';
+  import { ref, toRefs, watch, nextTick, onMounted, PropType } from 'vue';
   import dayjs from 'dayjs';
   import DictionarySelect from '@/components/cac-components/dictionary-select/index.vue';
 
   const props = defineProps({
     type: {
       // 控制按钮类型
-      type: String,
+      type: String as PropType<
+        'primary' | 'secondary' | 'outline' | 'dashed' | 'text'
+      >,
       default: 'primary',
     },
     click: {
@@ -292,7 +294,7 @@
     },
     title: {
       type: String,
-      default: '新增',
+      default: '详情',
     },
     disabled: {
       // 控制按钮是否置灰
@@ -311,18 +313,18 @@
     },
     dataSource: {
       // 表单子项信息列表
-      type: Array,
+      type: Array as PropType<any[]>,
       default() {
         return [];
       },
     },
     dataRecord: {
-      type: Object,
+      type: Object as PropType<any>,
       default() {
         return {};
       },
     },
-    rules: { type: Object, default: () => {} },
+    rules: { type: Object, default: () => ({}) },
   });
   const emits = defineEmits([
     'change',
@@ -741,7 +743,9 @@
     let res = true;
     // console.log(form.value);
     drawerForm.value
-      .validate(() => {})
+      .validate(() => {
+        // 校验回调
+      })
       // eslint-disable-next-line consistent-return
       .then((error: any) => {
         if (!error) {

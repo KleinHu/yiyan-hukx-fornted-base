@@ -67,7 +67,7 @@
           />
           <!-- 表格 -->
           <a-table
-            v-model:selectedKeys="selectedKeys"
+            v-model:selected-keys="selectedKeys"
             row-key="id"
             column-resizable
             :columns="tbCols"
@@ -79,9 +79,9 @@
             :scrollbar="true"
             @page-change="onPageChange"
             @page-size-change="onPageSizeChange"
-            @select="(_rowKeys, _rowKey, record) => rowClick(record)"
-            @select-all="selectAll"
-            @row-click="rowClick"
+            @select="(_rowKeys: any, _rowKey: any, record: any) => rowClick(record)"
+            @select-all="(checked: boolean) => selectAll(checked)"
+            @row-click="(record: any) => rowClick(record)"
           >
             <!-- 插槽-密级 -->
             <template #secretLevel="{ record }">
@@ -161,7 +161,6 @@
     onMounted,
     reactive,
     watch,
-    defineExpose,
     PropType,
     toRefs,
     computed,
@@ -258,7 +257,7 @@
       ellipsis: true,
       align: 'center',
       tooltip: true,
-      render: ({ record }) => setDeptName(record.deptId),
+      render: ({ record }: { record: any }) => setDeptName(record.deptId),
     },
   ];
   const searchRef = ref<any>();

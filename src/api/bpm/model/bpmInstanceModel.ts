@@ -81,7 +81,7 @@ export interface BpmInstDraftUpdateReq {
 }
 
 // 作废流程实例
-export interface BpmInstCancelParams { 
+export interface BpmInstCancelParams {
   reason?: string;
   instId: string;
 }
