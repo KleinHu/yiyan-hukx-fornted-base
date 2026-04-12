@@ -11,6 +11,25 @@
             <span class="highlight">{{ todoCount }}</span> 个任务待办
           </p>
         </div>
+        <!-- 新增右侧值班提醒 -->
+        <div v-if="myDutyInfo" class="duty-reminder-card" @click="goToCalendar">
+          <div class="reminder-content">
+            <!-- 今日提醒 -->
+            <div v-if="myDutyInfo.todayDuty" class="duty-tag today">
+              <icon-notification class="tag-icon pulse-red" />
+              <span class="tag-text">今天值班</span>
+            </div>
+            <!-- 未来提醒 -->
+            <div v-if="myDutyInfo.nextDutyDays" class="duty-tag future">
+              <icon-calendar class="tag-icon" />
+              <span class="tag-text">
+                <span class="days">{{ myDutyInfo.nextDutyDays }}</span>
+                天后需要值班
+              </span>
+            </div>
+          </div>
+          <icon-right class="arrow-icon" />
+        </div>
       </div>
 
       <!-- 统计看板 -->
@@ -61,8 +80,11 @@
           </div>
         </div>
 
-        <!-- 右侧：部门新闻 & 快捷入口 -->
+        <!-- 右侧：专题看板 & 部门新闻 & 快捷入口 -->
         <div class="news-area">
+          <div class="duty-section">
+            <DutyCard />
+          </div>
           <div class="news-section">
             <ArticleNews />
           </div>
@@ -77,15 +99,31 @@
 
 <script lang="ts" setup>
   import { ref, computed, onMounted, onUnmounted } from 'vue';
+  import { useRouter } from 'vue-router';
   import { useUserStore } from '@/store';
+  import useDutySchedule from '@/hooks/oa/duty/useDutySchedule';
   import QuickAccess from '@/views/dashboard/workplace/components/quick-access.vue';
   import DataPanel from './components/data-panel.vue';
   import ArticleNews from './components/article-news.vue';
   import TodoContent from './components/todo-content.vue';
   import MyTask from './components/my-task.vue';
   import BusinessDashboard from './components/business-dashboard.vue';
+  import DutyCard from './components/DutyCard.vue';
 
+  const router = useRouter();
   const userStore = useUserStore();
+
+  // ========== 值班提醒逻辑 ==========
+  const { getMyLatestDuty } = useDutySchedule();
+  const myDutyInfo = ref<any>(null);
+
+  const fetchMyDuty = async () => {
+    myDutyInfo.value = await getMyLatestDuty();
+  };
+
+  const goToCalendar = () => {
+    router.push({ name: 'DutyCalendar' });
+  };
 
   // ========== 问候语 ==========
   const userName = computed(
@@ -111,6 +149,7 @@
 
   // ========== 自动切换已关闭 ==========
   onMounted(() => {
+    fetchMyDuty();
     // 之前这里有 startAutoSwitch()
   });
 
@@ -145,6 +184,90 @@
     padding: 20px 24px;
     background: linear-gradient(135deg, #e8f3ff 0%, #f0ecff 100%);
     border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .duty-reminder-card {
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    padding: 8px 16px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    box-shadow: 0 4px 12px rgba(31, 38, 135, 0.05);
+
+    &:hover {
+      transform: scale(1.02);
+      background: rgba(255, 255, 255, 0.6);
+      box-shadow: 0 8px 24px rgba(31, 38, 135, 0.1);
+    }
+
+    .reminder-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+
+      .duty-tag {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 12px;
+        height: 32px; // 强制高度一致
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 600;
+        line-height: 1;
+
+        &.today {
+          background: #fff1f0;
+          color: #ff4d4f;
+          border: 1px solid rgba(255, 77, 79, 0.2);
+        }
+
+        &.future {
+          background: #e6f7ff;
+          color: #1677ff;
+          border: 1px solid rgba(22, 119, 255, 0.2);
+        }
+
+        .tag-icon {
+          font-size: 16px;
+        }
+
+        .days {
+          font-size: 18px;
+          margin: 0 2px;
+        }
+      }
+    }
+
+    .arrow-icon {
+      color: var(--color-text-4);
+      font-size: 14px;
+    }
+  }
+
+  .pulse-red {
+    animation: pulse-red 2s infinite;
+  }
+
+  @keyframes pulse-red {
+    0% {
+      box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(255, 77, 79, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(255, 77, 79, 0);
+    }
   }
 
   .greeting-title {

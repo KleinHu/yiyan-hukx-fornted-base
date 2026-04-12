@@ -228,6 +228,7 @@
       defaultSelectedEmployees?: Employee[];
       multiple?: boolean;
       max?: number;
+      defaultDeptId?: string;
     }>(),
     {
       multiple: true,
@@ -458,7 +459,10 @@
     () => props.visible,
     (val) => {
       if (val) {
-        selectedDeptKeys.value = [ALL_DEPARTMENTS_KEY];
+        // 如果有默认部门ID，则选中它，否则选中“全部分类”
+        selectedDeptKeys.value = props.defaultDeptId
+          ? [props.defaultDeptId]
+          : [ALL_DEPARTMENTS_KEY];
         chosenEmployees.value = props.defaultSelectedEmployees
           ? [...props.defaultSelectedEmployees]
           : [];
@@ -470,7 +474,9 @@
 
   onMounted(() => {
     if (props.visible) {
-      selectedDeptKeys.value = [ALL_DEPARTMENTS_KEY];
+      selectedDeptKeys.value = props.defaultDeptId
+        ? [props.defaultDeptId]
+        : [ALL_DEPARTMENTS_KEY];
       onEmployeeSearch();
     }
   });
